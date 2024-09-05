@@ -1,0 +1,15 @@
+# Put this file in `/etc/systemd/system/` directory
+# Then run `systemctl enable foundryvtt.service; systemctl start foundryvtt.service`
+[Unit]
+Description=Foundry Virtual Tabletop systemd service
+After=network.target
+
+[Service]
+Type=simple
+User=foundryvtt
+WorkingDirectory=/opt/foundryvtt
+ExecStart=node /opt/foundryvtt/resources/app/main.js --dataPath=/opt/foundrydata
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
