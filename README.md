@@ -20,7 +20,39 @@ When needed, consult official installation guide! [https://foundryvtt.com/articl
 7. Run `systemctl enable foundryvtt.service; systemctl start foundryvtt.service` <- This will enure that foundry is started when you start/restart the server
 8. Check the following url <your server ip>:30000 and verify that foundry is installed.
 
-Et voila - enyoy playing DnD on your server!
+Et voilà - enyoy playing DnD on your server!
+
+### Tips for nginx
+
+I used nginx as proxy so that foundry would run on / of server. No need to go through :30000 port.
+Following is only snippet, do not replace server nginx.config with the following. Adapt it and copy where it suits you.
+
+```nginx
+...
+
+http {
+  # Add following directives to increase upload size through the foundy application when using nginx
+  # Otherwise our dungeon master had problem uploading images and assets due to some ridiculously low upload size limit
+  include       mime.types;
+  default_type  application/octet-stream;
+  client_max_body_size 50M;
+
+  ...
+
+  # Something like this should ensure that any request to / will be passed to our application running on :30000
+  server {
+    location / {
+      proxy_pass http://localhost:30000;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+    }
+  }
+  ...
+}
+```
 
 ## Backstory
 
